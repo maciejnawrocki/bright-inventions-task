@@ -26,7 +26,7 @@ public class BookService {
   }
 
   Book updateBook(Long id, Book book) {
-    if(bookRepository.findById(id).isEmpty()){
+    if (bookRepository.findById(id).isEmpty()) {
       throw new BookServiceException("Book with id " + id + " does not exist");
     }
     book.setId(id);
@@ -40,8 +40,7 @@ public class BookService {
   Comment addComment(long id, Comment comment) {
     Optional<Book> byId = bookRepository.findById(id);
     Book book =
-        byId.orElseThrow(
-            () -> new BookServiceException("Book with id " + id + " does not exist"));
+        byId.orElseThrow(() -> new BookServiceException("Book with id " + id + " does not exist"));
     comment.setBook(book);
     book.getComments().add(comment);
     bookRepository.save(book);

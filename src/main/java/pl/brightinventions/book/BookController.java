@@ -14,14 +14,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.brightinventions.book.dto.BookDto;
 import pl.brightinventions.book.dto.CommentDto;
-import pl.brightinventions.book.entity.Book;
+import pl.brightinventions.book.dto.InboundBookDto;
+import pl.brightinventions.book.dto.InboundCommentDto;
 import pl.brightinventions.book.mappers.BookMapper;
 import pl.brightinventions.book.mappers.CommentsMapper;
 
+import java.net.URI;
+
 @RestController
-@RequestMapping("/books")
+@RequestMapping(BookController.BOOKS)
 @RequiredArgsConstructor
 class BookController {
+
+  public static final String BOOKS = "/books";
+  public static final String COMMENTS = "/comments";
 
   private final BookMapper bookMapper;
   private final CommentsMapper commentsMapper;
@@ -36,28 +42,32 @@ class BookController {
   }
 
   @PostMapping
-  public ResponseEntity<Book> addBook(@RequestBody BookDto bookDto) {
-    Book book = bookService.addBook(bookMapper.mapToEntity(bookDto));
-    return ResponseEntity.ok().body(book);
+  public ResponseEntity<BookDto> addBook(@RequestBody InboundBookDto bookDto) {
+    BookDto book = bookMapper.mapToDto(bookService.addBook(bookMapper.mapToEntity(bookDto)));
+    return ResponseEntity.created(URI.create(String.format("%s/%s", BOOKS, book.getId())))
+        .body(book);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Book> updateBook(@PathVariable long id, @RequestBody BookDto bookDto) {
-    Book book = bookService.updateBook(id, bookMapper.mapToEntity(bookDto));
+  public ResponseEntity<BookDto> updateBook(
+      @PathVariable long id, @RequestBody InboundBookDto bookDto) {
+    BookDto book = bookMapper.mapToDto(bookService.updateBook(id, bookMapper.mapToEntity(bookDto)));
     return ResponseEntity.ok().body(book);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<String> removeBook(@PathVariable long id) {
+  public ResponseEntity<Void> removeBook(@PathVariable long id) {
     bookService.removeBook(id);
-    return ResponseEntity.ok().body("Item successfully removed");
+    return ResponseEntity.noContent().build();
   }
 
-  @PostMapping("/{id}/comments")
+  @PostMapping("/{id}" + COMMENTS)
   public ResponseEntity<CommentDto> addComment(
-      @PathVariable long id, @RequestBody CommentDto commentDto) {
+      @PathVariable long id, @RequestBody InboundCommentDto commentDto) {
     CommentDto comment =
         commentsMapper.mapToDto(bookService.addComment(id, commentsMapper.mapToEntity(commentDto)));
-    return ResponseEntity.ok().body(comment);
+    return ResponseEntity.created(
+            URI.create(String.format("%s/%s/%s/%s", BOOKS, id, COMMENTS, comment.getId())))
+        .body(comment);
   }
 }
