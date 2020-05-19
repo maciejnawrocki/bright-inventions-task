@@ -39,7 +39,7 @@ mvn spring-boot:run
 
 Application has build in interactive [Swagger](https://swagger.io/docs/open-source-tools/swagger-ui/usage/installation/) documentation.
 
-it can be accessed by [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+It can be accessed by [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
 ### curl
 
@@ -68,21 +68,4 @@ curl -X DELETE "http://localhost:8080/books/1"
 * add comment
 ```
 curl -X POST "http://localhost:8080/books/1/comments" -H "Content-Type: application/json" -d "{ \"content\": \"Excellent book!\"}"
-```
-
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
 ```

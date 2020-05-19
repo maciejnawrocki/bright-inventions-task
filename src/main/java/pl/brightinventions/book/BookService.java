@@ -14,6 +14,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BookService {
 
+  public static final String BOOK_DOES_NOT_EXIST = "Book with id %s does not exist";
   private final BookRepository bookRepository;
   private final CommentRepository commentRepository;
 
@@ -25,9 +26,9 @@ public class BookService {
     return bookRepository.save(book);
   }
 
-  Book updateBook(Long id, Book book) {
+  Book updateBook(long id, Book book) {
     if (bookRepository.findById(id).isEmpty()) {
-      throw new BookServiceException("Book with id " + id + " does not exist");
+      throw new BookServiceException(String.format(BOOK_DOES_NOT_EXIST, id));
     }
     book.setId(id);
     return bookRepository.save(book);
@@ -39,8 +40,7 @@ public class BookService {
 
   Comment addComment(long id, Comment comment) {
     Optional<Book> byId = bookRepository.findById(id);
-    Book book =
-        byId.orElseThrow(() -> new BookServiceException("Book with id " + id + " does not exist"));
+    Book book = byId.orElseThrow(() -> new BookServiceException(String.format(BOOK_DOES_NOT_EXIST, id)));
     comment.setBook(book);
     book.getComments().add(comment);
     bookRepository.save(book);
